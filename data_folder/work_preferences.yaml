@@ -4,8 +4,8 @@ onsite: true
 
 experience_level:
   internship: false
-  entry: true
-  associate: true
+  entry: false
+  associate: false
   mid_senior_level: true
   director: false
   executive: false
@@ -14,34 +14,42 @@ job_types:
   full_time: true
   contract: false
   part_time: false
-  temporary: true
+  temporary: false
   internship: false
   other: false
-  volunteer: true
+  volunteer: false
 
 date:
-  all_time: false
+  all_time: true
   month: false
   week: false
-  24_hours: true
+  "24_hours": true
 
 positions:
-  - Software engineer
+  - Software Engineer
+  - Front-End Developer
+  - Frontend Engineer
+  - React Developer
+  - JavaScript Developer
+  - UI Developer
+  - UI Engineer
+  - Web Developer
+  - Web Engineer
 
 locations:
-  - Germany
+  - United States
+  - Cary, NC
 
 apply_once_at_company: true
 
-distance: 100
+distance: 50
 
 company_blacklist:
-  - wayfair
-  - Crossover
+  - zzz # None specified
 
 title_blacklist:
-  - word1
-  - word2
+  - QA Engineer # Inferring from career progression toward frontend development
+  - Test Engineer
 
 location_blacklist:
-  - Brazil
+  - zzz # None specified

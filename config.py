@@ -17,6 +17,7 @@ JOB_MAX_APPLICATIONS = 5
 JOB_MIN_APPLICATIONS = 1
 
 LLM_MODEL_TYPE = 'openai'
-LLM_MODEL = 'gpt-4o-mini'
+# LLM_MODEL = 'claude-3-7-sonnet-latest'
+LLM_MODEL = 'gpt-4o'
 # Only required for OLLAMA models
-LLM_API_URL = ''
+LLM_API_URL = 'https://api.openai.com/v1/chat/completions'

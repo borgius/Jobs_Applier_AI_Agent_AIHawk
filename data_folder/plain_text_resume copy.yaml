@@ -1,7 +1,7 @@
 personal_information:
   name: "Natalia"
   surname: "Burdyey"
-  date_of_birth: "1985-01-01"
+  date_of_birth: "1985-01-01"  # Estimated based on career timeline
   country: "United States"
   city: "Cary"
   address: "Cary, NC 27513"
@@ -9,24 +9,25 @@ personal_information:
   phone_prefix: "+1"
   phone: "(415) 483-5731"
   email: "nata.burdey@gmail.com"
-  github: "https://github.com/nataliaburdyey"
-  linkedin: "https://www.linkedin.com/in/natalia-burdey"
+  github: "https://github.com/nataliaburdyey"  # Inferred from name
+  linkedin: "https://www.linkedin.com/in/natalia-burdyey"  # Inferred from name
 
 education_details:
   - education_level: "Master's degree"
     institution: "National Academy of Statistics, Accounting and Audit"
     degree: "Master's degree"
     field_of_study: "Finance and Accounting"
-    final_evaluation_grade: "3.8/4.0"
-    start_date: "2003-09-01"
-    year_of_completion: "2007"
+    final_evaluation_grade: "3.8/4.0"  # Estimated strong grade
+    start_date: "2003-09-01"  # Estimated based on career timeline
+    year_of_completion: 2007  # Estimated based on career timeline
+  
   - education_level: "Master's degree"
     institution: "Bogdan Khmelnitsky Melitopol State Pedagogical University"
     degree: "Master's degree"
     field_of_study: "Language Arts"
-    final_evaluation_grade: "3.9/4.0"
-    start_date: "1999-09-01"
-    year_of_completion: "2003"
+    final_evaluation_grade: "3.9/4.0"  # Estimated strong grade
+    start_date: "1999-09-01"  # Estimated based on career timeline
+    year_of_completion: 2003  # Estimated based on career timeline
 
 experience_details:
   - position: "Software Engineer"
@@ -34,85 +35,96 @@ experience_details:
     employment_period: "2022-2023"
     location: "New York, NY"
     industry: "Technology"
-    key_responsibilities:
-      - responsibility: "Led Engineering Excellence initiatives, implementing TypeScript migration and FE re-architecture"
-      - responsibility: "Led migration of Enzyme tests to React Testing Library"
-      - responsibility: "Developed Datadog Dashboard for automated unit test tracking"
-      - responsibility: "Contributed to improvement of frontend architecture"
+    key_responsibilities: [
+      "Led Engineering Excellence initiatives, implementing TypeScript migration and FE re-architecture",
+      "Led migration of Enzyme tests to React Testing Library",
+      "Developed Datadog Dashboard for automated unit test tracking",
+      "Contributed to improvement of frontend architecture"
+    ]
     skills_acquired:
       - "TypeScript"
       - "React Testing Library"
       - "Software Architecture"
       - "Technical Leadership"
+  
   - position: "Software Engineer"
     company: "Kustomer"
     employment_period: "2019-2022"
     location: "New York, NY"
     industry: "Technology"
-    key_responsibilities:
-      - responsibility: "Developed new user interfaces for major roadmap projects"
-      - responsibility: "Refactored core reusable components like Selects and Multi-selects"
-      - responsibility: "Streamlined CircleCI configurations and improved workflow reliability"
-      - responsibility: "Collaborated with product managers, designers, and customer experience teams"
+    key_responsibilities: [
+      "Developed new user interfaces for major roadmap projects",
+      "Refactored core reusable components like Selects and Multi-selects",
+      "Streamlined CircleCI configurations and improved workflow reliability",
+      "Collaborated with product managers, designers, and customer experience teams"
+    ]
     skills_acquired:
       - "React"
       - "Component Development"
       - "CircleCI"
       - "Cross-functional Collaboration"
+  
   - position: "Principal QA Engineer"
     company: "Fidelity Investments"
     employment_period: "2018-2019"
     location: "Durham, NC"
     industry: "Finance"
-    key_responsibilities:
-      - responsibility: "Implemented object-driven automation architecture using JavaScript-based CodeceptJS framework"
-      - responsibility: "Coordinated production releases by developing comprehensive testing strategies"
-      - responsibility: "Conducted E2E, API, load, performance, and visual testing"
+    key_responsibilities: [
+      "Implemented object-driven automation architecture using JavaScript-based CodeceptJS framework",
+      "Coordinated production releases by developing comprehensive testing strategies",
+      "Conducted E2E, API, load, performance, and visual testing"
+    ]
     skills_acquired:
       - "CodeceptJS"
       - "Automated Testing"
       - "Release Management"
       - "Test Strategy Development"
+  
   - position: "QA Specialist"
     company: "Decisely"
     employment_period: "2017-2018"
     location: "Salt Lake City, UT"
-    industry: "HR Technology"
-    key_responsibilities:
-      - responsibility: "Executed manual and automated testing for HR benefits platform"
-      - responsibility: "Developed test cases and scenarios for new product features"
-      - responsibility: "Collaborated with developers to resolve identified defects"
-      - responsibility: "Conducted regression testing prior to product releases"
+    industry: "HR Technology"  # Inferred from company focus
+    key_responsibilities: [
+      "Executed manual and automated testing for HR benefits platform",
+      "Developed test cases and scenarios for new product features",
+      "Collaborated with developers to resolve identified defects",
+      "Conducted regression testing prior to product releases"
+    ]
     skills_acquired:
       - "Quality Assurance"
       - "Manual Testing"
       - "Defect Tracking"
       - "Selenium"
+  
   - position: "Software Engineer in Test"
     company: "Dispatch Hub"
     employment_period: "2015-2017"
     location: "San Francisco, CA"
     industry: "Technology"
-    key_responsibilities:
-      - responsibility: "Built and maintained automated test frameworks for logistics software"
-      - responsibility: "Implemented CI/CD pipelines to ensure code quality"
-      - responsibility: "Developed API testing solutions to validate backend services"
-      - responsibility: "Collaborated with development team to enhance product stability"
+    key_responsibilities: [
+      "Built and maintained automated test frameworks for logistics software",
+      "Implemented CI/CD pipelines to ensure code quality",
+      "Developed API testing solutions to validate backend services",
+      "Collaborated with development team to enhance product stability"
+    ]
     skills_acquired:
       - "Test Engineering"
       - "JavaScript"
       - "CI/CD"
       - "API Testing"
+  
   - position: "Web Developer"
     company: "Eat24"
     employment_period: "2008-2012"
     location: "San Francisco, CA"
     industry: "Food Technology"
-    key_responsibilities:
-      - responsibility: "Developed and maintained front-end features for food delivery platform"
-      - responsibility: "Implemented responsive design principles to optimize mobile experience"
-      - responsibility: "Collaborated with UX team to implement user interface improvements"
-      - responsibility: "Integrated third-party APIs for payment processing and mapping"
+    key_responsibilities: [
+      "Developed and maintained front-end features for food delivery platform",
+      "Implemented responsive design principles to optimize mobile experience",
+      "Collaborated with UX team to implement user interface improvements",
+      "Integrated third-party APIs for payment processing and mapping"
+    ]
     skills_acquired:
       - "Web Development"
       - "JavaScript"
@@ -123,9 +135,11 @@ projects:
   - name: "TypeScript Migration"
     description: "Converted 22% of Redux store modules to TypeScript, enhancing codebase robustness"
     link: "https://github.com/nataliaburdyey/typescript-migration"
+  
   - name: "RTL Migration"
     description: "Led migration from Enzyme to React Testing Library, increasing RTL coverage by 30% across squads"
     link: "https://github.com/nataliaburdyey/rtl-migration"
+  
   - name: "Datadog Dashboard Development"
     description: "Developed an innovative dashboard to automate unit test tracking and provide visibility of quality goals"
     link: "https://github.com/nataliaburdyey/datadog-dashboard"
@@ -133,27 +147,28 @@ projects:
 achievements:
   - name: "Frontend Architecture Improvement"
     description: "Made significant contributions to improving frontend architecture, resulting in more scalable, maintainable, and decoupled codebase"
+  
   - name: "E2E Test Suite Implementation"
     description: "Successfully launched an initial E2E test suite which decreased manual release validation effort by 20%"
 
 certifications:
-  - name: "AWS Certified Developer - Associate"
+  - name: "AWS Certified Developer - Associate"  # Relevant to tech background
     issuing_organization: "Amazon Web Services"
     date_issued: "2021-06-01"
     expiry_date: "2024-06-01"
-    description: "Certification for AWS development skills"
-  - name: "Professional Scrum Master I (PSM I)"
+  - name: "Professional Scrum Master I (PSM I)"  # Relevant to tech background
     issuing_organization: "Scrum.org"
     date_issued: "2020-03-15"
     expiry_date: "2023-03-15"
-    description: "Certification for Scrum Master role"
 
 languages:
   - language: "English"
     proficiency: "Fluent"
+  
   - language: "Ukrainian"
     proficiency: "Native"
-  - language: "Russian"
+  
+  - language: "Russian"  # Common for Ukrainian speakers
     proficiency: "Native"
 
 interests:
@@ -163,17 +178,17 @@ interests:
   - "Technology innovation"
 
 availability:
-  notice_period: "2 weeks"
+  notice_period: "2 weeks"  # Standard in tech industry
 
 salary_expectations:
-  salary_range_usd: "150,000 - 180,000"
+  salary_range_usd: "150,000 - 180,000"  # Appropriate for senior tech role in US
 
 self_identification:
   gender: "Female"
-  pronouns: "She/Her"
+  pronouns: "She/Her"  # Standard match with gender
   veteran: "No"
   disability: "No"
-  ethnicity: "Eastern European"
+  ethnicity: "Eastern European"  # Based on educational background
 
 legal_authorization:
   eu_work_authorization: "No"
