@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import traceback
 from typing import List, Optional, Tuple, Dict
+from datetime import datetime
 
 import click
 import inquirer
@@ -217,179 +218,94 @@ class FileManager:
         return uploads
 
 
-def create_cover_letter(parameters: dict, llm_api_key: str):
+# Action and style mappings
+ACTION_MAPPING = {
+    "resume": "Generate Resume",
+    "job": "Generate Resume Tailored for Job Description",
+    "cover": "Generate Tailored Cover Letter for Job Description"
+}
+
+STYLE_MAPPING = {
+    "clean-blue": "Clean Blue",
+    "modern-blue": "Modern Blue",
+    "modern-grey": "Modern Grey",
+    "default": "Default",
+    "cloyola-grey": "Cloyola Grey"
+}
+
+def prompt_user_action() -> str:
     """
-    Logic to create a CV.
+    Use inquirer to ask the user which action they want to perform.
+
+    :return: Selected action.
     """
     try:
-        logger.info("Generating a CV based on provided parameters.")
-
-        # Carica il resume in testo semplice
-        with open(parameters["uploads"]["plainTextResume"], "r", encoding="utf-8") as file:
-            plain_text_resume = file.read()
-
-        style_manager = StyleManager()
-        available_styles = style_manager.get_styles()
-
-        if not available_styles:
-            logger.warning("No styles available. Proceeding without style selection.")
-        else:
-            # Present style choices to the user
-            choices = style_manager.format_choices(available_styles)
-            questions = [
-                inquirer.List(
-                    "style",
-                    message="Select a style for the resume:",
-                    choices=choices,
-                )
-            ]
-            style_answer = inquirer.prompt(questions)
-            if style_answer and "style" in style_answer:
-                selected_choice = style_answer["style"]
-                for style_name, (file_name, author_link) in available_styles.items():
-                    if selected_choice.startswith(style_name):
-                        style_manager.set_selected_style(style_name)
-                        logger.info(f"Selected style: {style_name}")
-                        break
-            else:
-                logger.warning("No style selected. Proceeding with default style.")
         questions = [
-    inquirer.Text('job_url', message="Please enter the URL of the job description:")
+            inquirer.List(
+                'action',
+                message="Select the action you want to perform:",
+                choices=list(ACTION_MAPPING.values()),
+            ),
         ]
-        answers = inquirer.prompt(questions)
-        job_url = answers.get('job_url')
-        resume_generator = ResumeGenerator()
-        resume_object = Resume(plain_text_resume)
-        driver = init_browser()
-        resume_generator.set_resume_object(resume_object)
-        resume_facade = ResumeFacade(            
-            api_key=llm_api_key,
-            style_manager=style_manager,
-            resume_generator=resume_generator,
-            resume_object=resume_object,
-            output_path=Path("data_folder/output"),
-        )
-        resume_facade.set_driver(driver)
-        resume_facade.link_to_job(job_url)
-        result_base64, suggested_name = resume_facade.create_cover_letter()         
-
-        # Decodifica Base64 in dati binari
-        try:
-            pdf_data = base64.b64decode(result_base64)
-        except base64.binascii.Error as e:
-            logger.error("Error decoding Base64: %s", e)
-            raise
-
-        # Definisci il percorso della cartella di output utilizzando `suggested_name`
-        output_dir = Path(parameters["outputFileDirectory"]) / suggested_name
-
-        # Crea la cartella se non esiste
-        try:
-            output_dir.mkdir(parents=True, exist_ok=True)
-            logger.info(f"Cartella di output creata o già esistente: {output_dir}")
-        except IOError as e:
-            logger.error("Error creating output directory: %s", e)
-            raise
-        
-        output_path = output_dir / "cover_letter_tailored.pdf"
-        try:
-            with open(output_path, "wb") as file:
-                file.write(pdf_data)
-            logger.info(f"CV salvato in: {output_path}")
-        except IOError as e:
-            logger.error("Error writing file: %s", e)
-            raise
+        answer = inquirer.prompt(questions)
+        if answer is None:
+            print("No answer provided. The user may have interrupted.")
+            return ""
+        return answer.get('action', "")
     except Exception as e:
-        logger.exception(f"An error occurred while creating the CV: {e}")
-        raise
+        print(f"An error occurred: {e}")
+        return ""
 
-
-def create_resume_pdf_job_tailored(parameters: dict, llm_api_key: str):
+def prompt_style_selection(style_manager):
     """
-    Logic to create a CV.
+    Prompt the user to select a resume style.
+    
+    :param style_manager: The StyleManager instance
+    :return: The selected style name or None if no selection
     """
-    try:
-        logger.info("Generating a CV based on provided parameters.")
-
-        # Carica il resume in testo semplice
-        with open(parameters["uploads"]["plainTextResume"], "r", encoding="utf-8") as file:
-            plain_text_resume = file.read()
-
-        style_manager = StyleManager()
-        available_styles = style_manager.get_styles()
-
-        if not available_styles:
-            logger.warning("No styles available. Proceeding without style selection.")
-        else:
-            # Present style choices to the user
-            choices = style_manager.format_choices(available_styles)
-            questions = [
-                inquirer.List(
-                    "style",
-                    message="Select a style for the resume:",
-                    choices=choices,
-                )
-            ]
-            style_answer = inquirer.prompt(questions)
-            if style_answer and "style" in style_answer:
-                selected_choice = style_answer["style"]
-                for style_name, (file_name, author_link) in available_styles.items():
-                    if selected_choice.startswith(style_name):
-                        style_manager.set_selected_style(style_name)
-                        logger.info(f"Selected style: {style_name}")
-                        break
-            else:
-                logger.warning("No style selected. Proceeding with default style.")
-        questions = [inquirer.Text('job_url', message="Please enter the URL of the job description:")]
-        answers = inquirer.prompt(questions)
-        job_url = answers.get('job_url')
-        resume_generator = ResumeGenerator()
-        resume_object = Resume(plain_text_resume)
-        driver = init_browser()
-        resume_generator.set_resume_object(resume_object)
-        resume_facade = ResumeFacade(            
-            api_key=llm_api_key,
-            style_manager=style_manager,
-            resume_generator=resume_generator,
-            resume_object=resume_object,
-            output_path=Path("data_folder/output"),
+    available_styles = style_manager.get_styles()
+    if not available_styles:
+        logger.warning("No styles available. Proceeding without style selection.")
+        return None
+    
+    # Present style choices to the user
+    choices = style_manager.format_choices(available_styles)
+    questions = [
+        inquirer.List(
+            "style",
+            message="Select a style for the resume:",
+            choices=choices,
         )
-        resume_facade.set_driver(driver)
-        resume_facade.link_to_job(job_url)
-        result_base64, suggested_name = resume_facade.create_resume_pdf_job_tailored()         
+    ]
+    style_answer = inquirer.prompt(questions)
+    if style_answer and "style" in style_answer:
+        selected_choice = style_answer["style"]
+        for style_name, (file_name, author_link) in available_styles.items():
+            if selected_choice.startswith(style_name):
+                return style_name
+    return None
 
-        # Decodifica Base64 in dati binari
-        try:
-            pdf_data = base64.b64decode(result_base64)
-        except base64.binascii.Error as e:
-            logger.error("Error decoding Base64: %s", e)
-            raise
+def get_output_filename(action, style, custom_filename=None):
+    """
+    Generate appropriate output filename based on parameters.
+    
+    :param action: The action being performed
+    :param style: The style selected
+    :param custom_filename: Optional custom filename
+    :return: The output filename
+    """
+    if custom_filename:
+        return custom_filename
+    
+    # Map action to short name for filename
+    action_name = next((k for k, v in ACTION_MAPPING.items() if v == action), "output")
+    
+    # Get timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    return f"{action_name}_{style}_{timestamp}.pdf"
 
-        # Definisci il percorso della cartella di output utilizzando `suggested_name`
-        output_dir = Path(parameters["outputFileDirectory"]) / suggested_name
-
-        # Crea la cartella se non esiste
-        try:
-            output_dir.mkdir(parents=True, exist_ok=True)
-            logger.info(f"Cartella di output creata o già esistente: {output_dir}")
-        except IOError as e:
-            logger.error("Error creating output directory: %s", e)
-            raise
-        
-        output_path = output_dir / "resume_tailored.pdf"
-        try:
-            with open(output_path, "wb") as file:
-                file.write(pdf_data)
-            logger.info(f"CV salvato in: {output_path}")
-        except IOError as e:
-            logger.error("Error writing file: %s", e)
-            raise
-    except Exception as e:
-        logger.exception(f"An error occurred while creating the CV: {e}")
-        raise
-
-
-def create_resume_pdf(parameters: dict, llm_api_key: str):
+def create_resume_pdf(parameters: dict, llm_api_key: str, style_name=None, output_filename=None):
     """
     Logic to create a CV.
     """
@@ -402,30 +318,19 @@ def create_resume_pdf(parameters: dict, llm_api_key: str):
 
         # Initialize StyleManager
         style_manager = StyleManager()
-        available_styles = style_manager.get_styles()
-
-        if not available_styles:
-            logger.warning("No styles available. Proceeding without style selection.")
+        
+        # Set style if provided, otherwise prompt
+        if style_name and style_name in STYLE_MAPPING.keys():
+            style_manager.set_selected_style(style_name)
+            logger.info(f"Using selected style: {style_name}")
         else:
-            # Present style choices to the user
-            choices = style_manager.format_choices(available_styles)
-            questions = [
-                inquirer.List(
-                    "style",
-                    message="Select a style for the resume:",
-                    choices=choices,
-                )
-            ]
-            style_answer = inquirer.prompt(questions)
-            if style_answer and "style" in style_answer:
-                selected_choice = style_answer["style"]
-                for style_name, (file_name, author_link) in available_styles.items():
-                    if selected_choice.startswith(style_name):
-                        style_manager.set_selected_style(style_name)
-                        logger.info(f"Selected style: {style_name}")
-                        break
+            selected_style = prompt_style_selection(style_manager)
+            if selected_style:
+                style_manager.set_selected_style(selected_style)
+                style_name = selected_style
             else:
                 logger.warning("No style selected. Proceeding with default style.")
+                style_name = "default"
 
         # Initialize the Resume Generator
         resume_generator = ResumeGenerator()
@@ -451,11 +356,15 @@ def create_resume_pdf(parameters: dict, llm_api_key: str):
             logger.error("Error decoding Base64: %s", e)
             raise
 
-        # Define the output directory using `suggested_name`
+        # Define the output filename
+        if not output_filename:
+            output_filename = get_output_filename("Generate Resume", style_name)
+        
+        # Define the output directory
         output_dir = Path(parameters["outputFileDirectory"])
 
         # Write the PDF file
-        output_path = output_dir / "resume_base.pdf"
+        output_path = output_dir / output_filename
         try:
             with open(output_path, "wb") as file:
                 file.write(pdf_data)
@@ -467,64 +376,202 @@ def create_resume_pdf(parameters: dict, llm_api_key: str):
         logger.exception(f"An error occurred while creating the CV: {e}")
         raise
 
+def create_resume_pdf_job_tailored(parameters: dict, llm_api_key: str, style_name=None, job_url=None, output_filename=None):
+    """
+    Logic to create a job-tailored CV.
+    """
+    try:
+        logger.info("Generating a job-tailored CV based on provided parameters.")
+
+        # Load the plain text resume
+        with open(parameters["uploads"]["plainTextResume"], "r", encoding="utf-8") as file:
+            plain_text_resume = file.read()
+
+        # Initialize StyleManager
+        style_manager = StyleManager()
         
-def handle_inquiries(selected_actions: List[str], parameters: dict, llm_api_key: str):
+        # Set style if provided, otherwise prompt
+        if style_name and style_name in STYLE_MAPPING.keys():
+            style_manager.set_selected_style(style_name)
+            logger.info(f"Using selected style: {style_name}")
+        else:
+            selected_style = prompt_style_selection(style_manager)
+            if selected_style:
+                style_manager.set_selected_style(selected_style)
+                style_name = selected_style
+            else:
+                logger.warning("No style selected. Proceeding with default style.")
+                style_name = "default"
+                
+        # Prompt for job URL if not provided
+        if not job_url:
+            questions = [inquirer.Text('job_url', message="Please enter the URL of the job description:")]
+            answers = inquirer.prompt(questions)
+            job_url = answers.get('job_url')
+            
+        # Initialize components
+        resume_generator = ResumeGenerator()
+        resume_object = Resume(plain_text_resume)
+        driver = init_browser()
+        resume_generator.set_resume_object(resume_object)
+        
+        # Create facade and process
+        resume_facade = ResumeFacade(            
+            api_key=llm_api_key,
+            style_manager=style_manager,
+            resume_generator=resume_generator,
+            resume_object=resume_object,
+            output_path=Path("data_folder/output"),
+        )
+        resume_facade.set_driver(driver)
+        resume_facade.link_to_job(job_url)
+        result_base64, suggested_name = resume_facade.create_resume_pdf_job_tailored()         
+
+        # Decode Base64 to binary data
+        try:
+            pdf_data = base64.b64decode(result_base64)
+        except base64.binascii.Error as e:
+            logger.error("Error decoding Base64: %s", e)
+            raise
+
+        # Define the output filename
+        if not output_filename:
+            output_filename = get_output_filename("Generate Resume Tailored for Job Description", style_name)
+        
+        # Define the output directory
+        output_dir = Path(parameters["outputFileDirectory"]) / suggested_name
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Write the PDF file
+        output_path = output_dir / output_filename
+        try:
+            with open(output_path, "wb") as file:
+                file.write(pdf_data)
+            logger.info(f"Resume saved at: {output_path}")
+        except IOError as e:
+            logger.error("Error writing file: %s", e)
+            raise
+    except Exception as e:
+        logger.exception(f"An error occurred while creating the CV: {e}")
+        raise
+
+def create_cover_letter(parameters: dict, llm_api_key: str, style_name=None, job_url=None, output_filename=None):
+    """
+    Logic to create a CV.
+    """
+    try:
+        logger.info("Generating a cover letter based on provided parameters.")
+
+        # Load the plain text resume
+        with open(parameters["uploads"]["plainTextResume"], "r", encoding="utf-8") as file:
+            plain_text_resume = file.read()
+
+        # Initialize StyleManager
+        style_manager = StyleManager()
+        
+        # Set style if provided, otherwise prompt
+        if style_name and style_name in STYLE_MAPPING.keys():
+            style_manager.set_selected_style(style_name)
+            logger.info(f"Using selected style: {style_name}")
+        else:
+            selected_style = prompt_style_selection(style_manager)
+            if selected_style:
+                style_manager.set_selected_style(selected_style)
+                style_name = selected_style
+            else:
+                logger.warning("No style selected. Proceeding with default style.")
+                style_name = "default"
+                
+        # Prompt for job URL if not provided
+        if not job_url:
+            questions = [inquirer.Text('job_url', message="Please enter the URL of the job description:")]
+            answers = inquirer.prompt(questions)
+            job_url = answers.get('job_url')
+            
+        # Initialize components
+        resume_generator = ResumeGenerator()
+        resume_object = Resume(plain_text_resume)
+        driver = init_browser()
+        resume_generator.set_resume_object(resume_object)
+        
+        # Create facade and process
+        resume_facade = ResumeFacade(            
+            api_key=llm_api_key,
+            style_manager=style_manager,
+            resume_generator=resume_generator,
+            resume_object=resume_object,
+            output_path=Path("data_folder/output"),
+        )
+        resume_facade.set_driver(driver)
+        resume_facade.link_to_job(job_url)
+        result_base64, suggested_name = resume_facade.create_cover_letter()         
+
+        # Decode Base64 to binary data
+        try:
+            pdf_data = base64.b64decode(result_base64)
+        except base64.binascii.Error as e:
+            logger.error("Error decoding Base64: %s", e)
+            raise
+
+        # Define the output filename
+        if not output_filename:
+            output_filename = get_output_filename("Generate Tailored Cover Letter for Job Description", style_name)
+        
+        # Define the output directory
+        output_dir = Path(parameters["outputFileDirectory"]) / suggested_name
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Write the PDF file
+        output_path = output_dir / output_filename
+        try:
+            with open(output_path, "wb") as file:
+                file.write(pdf_data)
+            logger.info(f"Cover letter saved at: {output_path}")
+        except IOError as e:
+            logger.error("Error writing file: %s", e)
+            raise
+    except Exception as e:
+        logger.exception(f"An error occurred while creating the cover letter: {e}")
+        raise
+    
+def handle_inquiries(selected_actions: str, parameters: dict, llm_api_key: str, style=None, job_url=None, output_filename=None):
     """
     Decide which function to call based on the selected user actions.
 
-    :param selected_actions: List of actions selected by the user.
+    :param selected_actions: Action selected by the user.
     :param parameters: Configuration parameters dictionary.
     :param llm_api_key: API key for the language model.
+    :param style: Optional style name to use.
+    :param job_url: Optional job URL for job-specific documents.
+    :param output_filename: Optional custom filename for the output.
     """
     try:
         if selected_actions:
             if "Generate Resume" == selected_actions:
                 logger.info("Crafting a standout professional resume...")
-                create_resume_pdf(parameters, llm_api_key)
+                create_resume_pdf(parameters, llm_api_key, style, output_filename)
                 
             if "Generate Resume Tailored for Job Description" == selected_actions:
                 logger.info("Customizing your resume to enhance your job application...")
-                create_resume_pdf_job_tailored(parameters, llm_api_key)
+                create_resume_pdf_job_tailored(parameters, llm_api_key, style, job_url, output_filename)
                 
             if "Generate Tailored Cover Letter for Job Description" == selected_actions:
                 logger.info("Designing a personalized cover letter to enhance your job application...")
-                create_cover_letter(parameters, llm_api_key)
-
+                create_cover_letter(parameters, llm_api_key, style, job_url, output_filename)
         else:
             logger.warning("No actions selected. Nothing to execute.")
     except Exception as e:
         logger.exception(f"An error occurred while handling inquiries: {e}")
         raise
 
-def prompt_user_action() -> str:
-    """
-    Use inquirer to ask the user which action they want to perform.
-
-    :return: Selected action.
-    """
-    try:
-        questions = [
-            inquirer.List(
-                'action',
-                message="Select the action you want to perform:",
-                choices=[
-                    "Generate Resume",
-                    "Generate Resume Tailored for Job Description",
-                    "Generate Tailored Cover Letter for Job Description",
-                ],
-            ),
-        ]
-        answer = inquirer.prompt(questions)
-        if answer is None:
-            print("No answer provided. The user may have interrupted.")
-            return ""
-        return answer.get('action', "")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return ""
-
-
-def main():
+@click.command()
+@click.option('--action', type=click.Choice(['resume', 'job', 'cover']), 
+              help='Action to perform: resume=Generate Resume, job=Generate Resume Tailored for Job Description, cover=Generate Tailored Cover Letter')
+@click.option('--style', type=click.Choice(['clean-blue', 'modern-blue', 'modern-grey', 'default', 'cloyola-grey']), 
+              help='Resume style to use')
+@click.option('--job-url', help='URL of the job description for tailored documents')
+@click.option('--filename', help='Custom output filename')
+def main(action=None, style=None, job_url=None, filename=None):
     """Main entry point for the AIHawk Job Application Bot."""
     try:
         # Define and validate the data folder
@@ -539,11 +586,19 @@ def main():
         config["uploads"] = FileManager.get_uploads(plain_text_resume_file)
         config["outputFileDirectory"] = output_folder
 
-        # Interactive prompt for user to select actions
-        selected_actions = prompt_user_action()
+        # Get action from CLI or prompt user
+        selected_action = None
+        if action:
+            selected_action = ACTION_MAPPING.get(action)
+            if not selected_action:
+                logger.error(f"Invalid action: {action}")
+                return
+        else:
+            # Interactive prompt for user to select actions
+            selected_action = prompt_user_action()
 
         # Handle selected actions and execute them
-        handle_inquiries(selected_actions, config, llm_api_key)
+        handle_inquiries(selected_action, config, llm_api_key, style, job_url, filename)
 
     except ConfigError as ce:
         logger.error(f"Configuration error: {ce}")
@@ -559,7 +614,6 @@ def main():
         logger.debug(traceback.format_exc())
     except Exception as e:
         logger.exception(f"An unexpected error occurred: {e}")
-
 
 if __name__ == "__main__":
     main()
