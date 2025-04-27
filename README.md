@@ -26,16 +26,15 @@ Jobs_Applier_AIHawk is continuously evolving, and your feedback, suggestions, an
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Features](#features)
-3. [Installation](#installation)
-4. [Configuration](#configuration)
-5. [Usage](#usage)
-6. [Documentation](#documentation)
-7. [Troubleshooting](#troubleshooting)
-8. [Conclusion](#conclusion)
-9. [Contributors](#contributors)
-10. [License](#license)
-11. [Disclaimer](#disclaimer)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Usage](#usage)
+5. [Documentation](#documentation)
+6. [Troubleshooting](#troubleshooting)
+7. [Conclusion](#conclusion)
+8. [Contributors](#contributors)
+9. [License](#license)
+10. [Disclaimer](#disclaimer)
 
 ## Introduction
 
